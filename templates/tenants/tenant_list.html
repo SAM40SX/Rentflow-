@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tenants | RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            color: #172033;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .button {
+            background: #0f172a;
+            color: white;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            padding: 18px 16px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 13px;
+        }
+
+        .badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #0e7490;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        @media(max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Manage Tenants</h1>
+            <p class="subtitle">
+                View and manage all registered RentFlow tenants.
+            </p>
+        </div>
+
+        <a href="{% url 'register_tenant' %}" class="button">
+            + Register Tenant
+        </a>
+    </div>
+
+    <div class="card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Email Address</th>
+                    <th>Phone Number</th>
+                    <th>Date Joined</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for tenant in tenants %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ tenant.username }}</strong></td>
+                    <td>{{ tenant.email|default:"Not provided" }}</td>
+                    <td>{{ tenant.phone_number|default:"Not provided" }}</td>
+                    <td>{{ tenant.date_joined|date:"d M Y" }}</td>
+                    <td><span class="badge">Tenant</span></td>
+
+
+<td>
+    <a href="{% url 'edit_tenant' tenant.id %}"
+       style="color:#0284c7; font-weight:700; text-decoration:none; margin-right:12px;">
+        Edit
+    </a>
+
+    <a href="{% url 'delete_tenant' tenant.id %}"
+       style="color:#dc2626; font-weight:700; text-decoration:none;">
+        Delete
+    </a>
+</td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty">
+                        No tenants registered yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <a href="{% url 'admin_dashboard' %}" class="back">
+        ← Back to Admin Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

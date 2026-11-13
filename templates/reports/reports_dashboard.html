@@ -1,0 +1,750 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentFlow | Reports & Analytics</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            background: #101a35;
+            min-height: 100vh;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: #aebbd3;
+            font-size: 14px;
+            transition: .25s;
+        }
+
+        .nav-link:hover,
+        .nav-active {
+            background: #24365d;
+            color: white;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 16px;
+            padding: 22px;
+            transition: .25s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(20, 40, 80, .07);
+        }
+
+        .section-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            text-align: left;
+            color: #8490a5;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .7px;
+            padding: 14px 12px;
+            background: #f8fafc;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 13px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .failed {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .progress-track {
+            height: 10px;
+            background: #edf1f7;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #2563eb, #06b6d4);
+            border-radius: 20px;
+            transition: width 1s ease;
+        }
+
+        @media(max-width: 900px) {
+            .sidebar {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="flex flex-col lg:flex-row min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar w-full lg:w-64 p-5 text-white">
+
+        <div class="mb-9">
+            <h1 class="text-2xl font-extrabold tracking-tight">
+                Rent<span class="text-cyan-400">Flow</span>
+            </h1>
+
+            <p class="text-xs text-slate-400 mt-1">
+                Property Management System
+            </p>
+        </div>
+
+        <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">
+            Main Menu
+        </p>
+
+        <nav class="space-y-2">
+
+            <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'add_property' %}" class="nav-link">
+                <span>＋</span> Add Property
+            </a>
+
+            <a href="{% url 'property_list' %}" class="nav-link">
+                <span>⌂</span> Manage Properties
+            </a>
+
+            <a href="{% url 'register_tenant' %}" class="nav-link">
+                <span>♙</span> Register Tenant
+            </a>
+
+            <a href="{% url 'tenant_list' %}" class="nav-link">
+                <span>♧</span> Manage Tenants
+            </a>
+
+            <a href="{% url 'payment_list' %}" class="nav-link">
+                <span>💳</span> Payments
+            </a>
+
+            <a href="{% url 'admin_notifications' %}" class="nav-link">
+                <span>♧</span> Notifications
+            </a>
+
+            <a href="{% url 'reports_dashboard' %}" class="nav-link nav-active">
+                <span>▤</span> Reports & Analytics
+            </a>
+
+            <a href="{% url 'logout' %}" class="nav-link mt-8">
+                <span>↪</span> Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-5 md:p-8 lg:p-10">
+
+        <!-- HEADER -->
+        <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+            <div>
+                <p class="text-sm text-slate-500">
+                    Administration / Reports
+                </p>
+
+                <h2 class="text-2xl md:text-3xl font-extrabold mt-2">
+                    Reports & Analytics
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-2">
+                    Monitor rental income, outstanding balances and property occupancy.
+                </p>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl px-4 py-3">
+                <p class="text-xs text-slate-400">Report generated</p>
+
+                <p class="font-bold text-sm">
+                    {{ today|date:"d M Y" }}
+                </p>
+            </div>
+
+        </header>
+
+
+        <!-- PDF REPORT DOWNLOADS -->
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+
+            <div class="mb-5">
+                <h2 class="text-lg font-bold text-gray-800">
+                    Download Reports
+                </h2>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Download your RentFlow reports in PDF format.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- MONTHLY COLLECTION -->
+                <a href="{% url 'monthly_collection_pdf' %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}"
+                   class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition">
+
+                    Monthly Collection
+                </a>
+
+                <!-- OUTSTANDING RENT -->
+                <a href="{% url 'outstanding_rent_pdf' %}?end_date={{ end_date|date:'Y-m-d' }}"
+                   class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition">
+
+                    Outstanding Rent
+                </a>
+
+                <!-- TENANT PAYMENT HISTORY -->
+                <a href="{% url 'tenant_payment_history_pdf' %}"
+                   class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition">
+
+                    Payment History
+                </a>
+
+                <!-- PROPERTY OCCUPANCY -->
+                <a href="{% url 'property_occupancy_pdf' %}"
+                   class="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-xl font-semibold text-sm transition">
+
+                    Property Occupancy
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- COLLECTION DATE FILTER -->
+        <section class="section-card mb-7">
+
+            <div class="mb-5">
+                <h3 class="font-bold text-lg">
+                    Filter Collection Report
+                </h3>
+
+                <p class="text-sm text-slate-400 mt-1">
+                    Select a date range to view successful payments collected during that period.
+                </p>
+            </div>
+
+            <form method="GET" action="{% url 'reports_dashboard' %}"
+                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+
+                <div>
+                    <label for="start_date"
+                           class="block text-sm font-semibold text-slate-600 mb-2">
+                        Start Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="start_date"
+                        name="start_date"
+                        value="{{ start_date|date:'Y-m-d' }}"
+                        max="{{ today|date:'Y-m-d' }}"
+                        required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                </div>
+
+                <div>
+                    <label for="end_date"
+                           class="block text-sm font-semibold text-slate-600 mb-2">
+                        End Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="end_date"
+                        name="end_date"
+                        value="{{ end_date|date:'Y-m-d' }}"
+                        max="{{ today|date:'Y-m-d' }}"
+                        required
+                        class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                </div>
+
+                <div>
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-3 rounded-xl text-sm transition">
+
+                        Apply Filter
+                    </button>
+                </div>
+
+                <div>
+                    <a href="{% url 'reports_dashboard' %}"
+                       class="flex items-center justify-center w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-5 py-3 rounded-xl text-sm transition">
+
+                        Reset Filter
+                    </a>
+                </div>
+
+            </form>
+
+            {% if filter_error %}
+                <div class="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                    {{ filter_error }}
+                </div>
+            {% endif %}
+
+        </section>
+
+
+        <!-- FINANCIAL SUMMARY -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-7">
+
+            <!-- SELECTED PERIOD COLLECTION -->
+            <div class="stat-card">
+                <p class="text-sm text-slate-500">
+                    Selected Period Collection
+                </p>
+
+                <h3 class="text-2xl font-extrabold mt-3 text-blue-600">
+                    KES {{ monthly_collection|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Paid transactions from
+                    {{ start_date|date:"d M Y" }}
+                    to
+                    {{ end_date|date:"d M Y" }}
+                </p>
+            </div>
+
+
+            <!-- TOTAL COLLECTED -->
+            <div class="stat-card">
+                <p class="text-sm text-slate-500">Total Collected</p>
+
+                <h3 class="text-2xl font-extrabold mt-3 text-emerald-600">
+                    KES {{ total_collected|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    All successful payments
+                </p>
+            </div>
+
+
+            <!-- OUTSTANDING RENT -->
+            <div class="stat-card">
+                <p class="text-sm text-slate-500">Outstanding Rent</p>
+
+                <h3 class="text-2xl font-extrabold mt-3 text-red-600">
+                    KES {{ total_outstanding|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Calculated as at {{ end_date|date:"d M Y" }}
+                </p>
+            </div>
+
+
+            <!-- ACTIVE TENANTS -->
+            <div class="stat-card">
+                <p class="text-sm text-slate-500">Active Tenants</p>
+
+                <h3 class="text-2xl font-extrabold mt-3 text-cyan-600">
+                    {{ active_tenants_count }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Currently active tenant accounts
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- OCCUPANCY AND PAYMENT STATUS -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-7">
+
+            <div class="section-card">
+
+                <h3 class="font-bold text-lg">
+                    Property Occupancy
+                </h3>
+
+                <p class="text-sm text-slate-400 mt-1">
+                    Current property utilization
+                </p>
+
+                <div class="flex justify-between items-end mt-7 mb-3">
+
+                    <div>
+                        <h2 class="text-4xl font-extrabold text-blue-600">
+                            {{ occupancy_rate|floatformat:1 }}%
+                        </h2>
+
+                        <p class="text-xs text-slate-400 mt-1">
+                            Occupancy rate
+                        </p>
+                    </div>
+
+                    <div class="text-right text-sm">
+                        <p class="font-bold">
+                            {{ occupied_properties }} Occupied
+                        </p>
+
+                        <p class="text-slate-400">
+                            {{ vacant_properties }} Vacant
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="progress-track">
+                    <div
+                        class="progress-fill"
+                        data-width="{{ occupancy_rate }}">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mt-6">
+
+                    <div class="bg-slate-50 p-4 rounded-xl">
+                        <p class="text-xs text-slate-400">Total Properties</p>
+
+                        <h3 class="text-2xl font-bold mt-1">
+                            {{ total_properties }}
+                        </h3>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl">
+                        <p class="text-xs text-slate-400">Occupied Properties</p>
+
+                        <h3 class="text-2xl font-bold mt-1">
+                            {{ occupied_properties }}
+                        </h3>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="section-card">
+
+                <h3 class="font-bold text-lg">
+                    Payment Status Overview
+                </h3>
+
+                <p class="text-sm text-slate-400 mt-1">
+                    Transactions requiring attention
+                </p>
+
+                <div class="space-y-5 mt-7">
+
+                    <div class="flex justify-between items-center">
+
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+
+                            <span class="text-sm font-medium">
+                                Pending Payments
+                            </span>
+                        </div>
+
+                        <span class="font-extrabold text-lg">
+                            {{ pending_payments }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="flex justify-between items-center">
+
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full bg-red-500"></span>
+
+                            <span class="text-sm font-medium">
+                                Failed Payments
+                            </span>
+                        </div>
+
+                        <span class="font-extrabold text-lg">
+                            {{ failed_payments }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-7 p-4 bg-blue-50 rounded-xl">
+
+                    <p class="text-sm text-blue-800 font-semibold">
+                        Payment reporting
+                    </p>
+
+                    <p class="text-xs text-blue-600 mt-1">
+                        Only successfully paid transactions contribute to collected rent.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- OUTSTANDING TENANTS -->
+        <section class="section-card mb-7">
+
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+
+                <div>
+                    <h3 class="font-bold text-lg">
+                        Outstanding Rent Report
+                    </h3>
+
+                    <p class="text-sm text-slate-400 mt-1">
+                        Tenants with unpaid rent balances as at
+                        {{ end_date|date:"d M Y" }}
+                    </p>
+                </div>
+
+                <span class="text-sm font-bold text-red-600">
+                    KES {{ total_outstanding|floatformat:2 }}
+                </span>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Property</th>
+                            <th>Rent Due</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in outstanding_tenants %}
+
+                        <tr>
+
+                            <td class="font-semibold">
+                                {{ item.tenant.tenant_user.get_full_name|default:item.tenant.tenant_user.username }}
+                            </td>
+
+                            <td>
+                                {{ item.tenant.property.name }}
+                            </td>
+
+                            <td>
+                                KES {{ item.rent_due|floatformat:2 }}
+                            </td>
+
+                            <td class="text-emerald-600 font-semibold">
+                                KES {{ item.paid|floatformat:2 }}
+                            </td>
+
+                            <td class="text-red-600 font-bold">
+                                KES {{ item.balance|floatformat:2 }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="5" class="text-center py-8 text-slate-400">
+                                No outstanding rent balances found.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT PAYMENTS -->
+        <section class="section-card">
+
+            <div class="mb-5">
+
+                <h3 class="font-bold text-lg">
+                    Recent Payment History
+                </h3>
+
+                <p class="text-sm text-slate-400 mt-1">
+                    Latest 10 recorded transactions
+                </p>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Tenant</th>
+                            <th>Property</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for payment in recent_payments %}
+
+                        <tr>
+
+                            <td class="font-semibold">
+                                {{ payment.tenant.tenant_user.username }}
+                            </td>
+
+                            <td>
+                                {{ payment.tenant.property.name }}
+                            </td>
+
+                            <td class="font-bold">
+                                KES {{ payment.amount|floatformat:2 }}
+                            </td>
+
+                            <td>
+                                {{ payment.get_payment_method_display }}
+                            </td>
+
+                            <td>
+                                {{ payment.payment_date|date:"d M Y" }}
+                            </td>
+
+                            <td>
+                                <span class="badge {{ payment.status }}">
+                                    {{ payment.get_status_display }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-slate-400">
+                                No payment records available.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <footer class="text-center text-xs text-slate-400 mt-8">
+            © {% now "Y" %} RentFlow Property Management System.
+            All rights reserved.
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- OCCUPANCY PROGRESS BAR -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const progressBar = document.querySelector('.progress-fill');
+
+        if (progressBar) {
+
+            let width = parseFloat(progressBar.dataset.width) || 0;
+
+            width = Math.max(0, Math.min(100, width));
+
+            progressBar.style.width = width + '%';
+
+        }
+
+    });
+</script>
+
+</body>
+</html>

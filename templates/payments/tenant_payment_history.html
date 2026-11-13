@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payment History | RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080f1e;
+            color: #f8fafc;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: white;
+            background: #2563eb;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #1d4ed8, #0891b2);
+            padding: 28px;
+            border-radius: 18px;
+            margin-bottom: 30px;
+        }
+
+        .summary p {
+            font-size: 14px;
+            opacity: .85;
+        }
+
+        .summary h2 {
+            font-size: 32px;
+            margin-top: 12px;
+        }
+
+        .table-card {
+            background: #111c30;
+            border: 1px solid #23324b;
+            border-radius: 16px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .table-card h2 {
+            margin-bottom: 22px;
+            font-size: 19px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 16px 12px;
+            text-align: left;
+            border-bottom: 1px solid #26344a;
+            font-size: 13px;
+        }
+
+        th {
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            color: #e2e8f0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .paid {
+            background: #064e3b;
+            color: #6ee7b7;
+        }
+
+        .pending {
+            background: #78350f;
+            color: #fcd34d;
+        }
+
+        .failed {
+            background: #7f1d1d;
+            color: #fca5a5;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 45px 15px;
+            color: #94a3b8;
+        }
+
+        @media(max-width: 600px) {
+            body {
+                padding: 18px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .summary h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>My Payment History</h1>
+            <p class="subtitle">
+                Welcome, {{ tenant_name }}. View your rent payment records.
+            </p>
+        </div>
+
+        <a href="{% url 'tenant_dashboard' %}" class="back-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="summary">
+        <p>Total Rent Paid</p>
+        <h2>KES {{ total_paid|floatformat:2 }}</h2>
+    </div>
+
+    <div class="table-card">
+
+        <h2>Payment Records</h2>
+
+        {% if payments %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Amount</th>
+                    <th>Payment Method</th>
+                    <th>Transaction Code</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.payment_date|date:"d M Y" }}</td>
+
+                    <td>
+                        KES {{ payment.amount|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        {{ payment.get_payment_method_display }}
+                    </td>
+
+                    <td>
+                        {{ payment.transaction_code|default:"—" }}
+                    </td>
+
+                    <td>
+                        <span class="status {{ payment.status }}">
+                            {{ payment.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="empty">
+            <h3>No Payment Records Yet</h3>
+            <p>Your rent payment history will appear here.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

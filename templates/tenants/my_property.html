@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Property | RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080f20;
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 35px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            background: #17243b;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #263957;
+        }
+
+        .property-card {
+            background: #111c32;
+            border: 1px solid #263653;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 22px;
+        }
+
+        .property-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .property-heading h2 {
+            font-size: 22px;
+        }
+
+        .status {
+            background: #064e3b;
+            color: #6ee7b7;
+            padding: 8px 13px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .detail {
+            background: #17243b;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .detail span {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 9px;
+        }
+
+        .detail strong {
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .rent {
+            color: #38bdf8 !important;
+            font-size: 21px !important;
+        }
+
+        .description {
+            margin-top: 22px;
+            padding: 20px;
+            background: #17243b;
+            border-radius: 12px;
+        }
+
+        .description h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .description p {
+            color: #cbd5e1;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .empty {
+            background: #111c32;
+            border: 1px solid #263653;
+            padding: 45px 25px;
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .empty h2 {
+            margin-bottom: 12px;
+        }
+
+        .empty p {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        @media(max-width: 600px) {
+            h1 {
+                font-size: 23px;
+            }
+
+            .property-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+        <div>
+            <h1>My Property</h1>
+            <p class="subtitle">
+                Welcome, {{ tenant_name }}. View your rental information.
+            </p>
+        </div>
+
+        <a href="{% url 'tenant_dashboard' %}" class="back-btn">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if tenant %}
+
+        <div class="property-card">
+
+            <div class="property-heading">
+                <h2>{{ tenant.property.name }}</h2>
+
+                {% if tenant.is_active %}
+                    <span class="status">ACTIVE TENANCY</span>
+                {% else %}
+                    <span class="status">INACTIVE TENANCY</span>
+                {% endif %}
+            </div>
+
+            <div class="details">
+
+                <div class="detail">
+                    <span>Property Type</span>
+                    <strong>{{ tenant.property.get_property_type_display }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Location</span>
+                    <strong>{{ tenant.property.location }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Monthly Rent</span>
+                    <strong class="rent">
+                        KES {{ tenant.monthly_rent|floatformat:2 }}
+                    </strong>
+                </div>
+
+                <div class="detail">
+                    <span>Move-in Date</span>
+                    <strong>{{ tenant.move_in_date|date:"d M Y" }}</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Security Deposit</span>
+                    <strong>
+                        KES {{ tenant.deposit_amount|floatformat:2 }}
+                    </strong>
+                </div>
+
+                <div class="detail">
+                    <span>Tenant</span>
+                    <strong>{{ tenant_name }}</strong>
+                </div>
+
+            </div>
+
+            <div class="description">
+                <h3>Property Description</h3>
+
+                <p>
+                    {% if tenant.property.description %}
+                        {{ tenant.property.description }}
+                    {% else %}
+                        No property description has been provided.
+                    {% endif %}
+                </p>
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+            <h2>No Property Assigned</h2>
+            <p>
+                Your account does not currently have a property assigned.
+                Please contact the property administrator for assistance.
+            </p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

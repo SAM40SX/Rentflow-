@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Tenant | RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: white;
+            padding: 40px;
+            border-radius: 18px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.07);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 30px;
+        }
+
+        .logo span {
+            color: #0ea5e9;
+        }
+
+        h1 {
+            font-size: 25px;
+            color: #111827;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 9px;
+            background: #0f172a;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #164e63;
+            transform: translateY(-2px);
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .back:hover {
+            color: #0ea5e9;
+        }
+
+        @media(max-width: 500px) {
+            .container {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">Rent<span>Flow</span></div>
+
+    <h1>Register New Tenant</h1>
+
+    <p class="subtitle">
+        Add a tenant to the RentFlow rental management system.
+        Complete the information below.
+    </p>
+
+    {% if success %}
+        <div class="success">
+            ✓ {{ success }}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group">
+
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+
+                {{ field }}
+
+                {% for error in field.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+
+        <button type="submit">
+            Register Tenant →
+        </button>
+
+    </form>
+
+    <a href="{% url 'admin_dashboard' %}" class="back">
+        ← Back to Admin Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentFlow | My Profile</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #080f1e;
+            color: #e2e8f0;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            background: #111c30;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6,182,212,0.12);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+
+    <div class="max-w-4xl mx-auto px-5 py-10">
+
+        <!-- Back to Dashboard -->
+        <a href="{% url 'tenant_dashboard' %}"
+           class="text-cyan-400 hover:text-cyan-300 text-sm">
+            ← Back to Dashboard
+        </a>
+
+        <!-- Page Heading -->
+        <div class="mt-8 mb-8">
+
+            <p class="text-cyan-400 text-sm font-bold uppercase tracking-widest">
+                Account Settings
+            </p>
+
+            <h1 class="text-3xl font-extrabold mt-2">
+                My Profile
+            </h1>
+
+            <p class="text-slate-400 mt-2">
+                Manage your personal information.
+            </p>
+
+        </div>
+
+        <!-- Profile Completion Indicator -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-6 mb-8">
+
+            <div class="flex justify-between items-center mb-3">
+
+                <div>
+                    <h3 class="text-white font-bold text-lg">
+                        Profile Completion
+                    </h3>
+
+                    <p class="text-slate-400 text-sm">
+                        Complete your personal information.
+                    </p>
+                </div>
+
+                <span class="text-cyan-400 font-bold text-xl">
+                    {{ profile_completion|default:0 }}%
+                </span>
+
+            </div>
+
+           
+<!-- Progress Bar -->
+<div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+
+    <div
+        id="profileProgressBar"
+        class="bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+        data-progress="{{ profile_completion|default:0 }}">
+    </div>
+
+</div>
+
+
+        <!-- Success Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mb-5 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Profile Card -->
+        <div class="bg-slate-900/80 border border-slate-700 rounded-2xl p-6 md:p-8">
+
+            <!-- User Information -->
+            <div class="flex items-center gap-4 mb-8 pb-6 border-b border-slate-700">
+
+                <div class="w-16 h-16 rounded-2xl bg-cyan-500/15 flex items-center justify-center text-3xl">
+                    👤
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold">
+                        {{ request.user.username }}
+                    </h2>
+
+                    <p class="text-slate-400 text-sm">
+                        Tenant Account
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Profile Form -->
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- First Name -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">
+                            First Name
+                        </label>
+
+                        {{ form.first_name }}
+
+                        {% for error in form.first_name.errors %}
+                            <p class="text-red-400 text-xs mt-2">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Last Name -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">
+                            Last Name
+                        </label>
+
+                        {{ form.last_name }}
+
+                        {% for error in form.last_name.errors %}
+                            <p class="text-red-400 text-xs mt-2">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">
+                            Email Address
+                        </label>
+
+                        {{ form.email }}
+
+                        {% for error in form.email.errors %}
+                            <p class="text-red-400 text-xs mt-2">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">
+                            Phone Number
+                        </label>
+
+                        {{ form.phone_number }}
+
+                        {% for error in form.phone_number.errors %}
+                            <p class="text-red-400 text-xs mt-2">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <!-- Account Actions -->
+                <div class="mt-8 pt-6 border-t border-slate-700">
+
+                    <p class="text-slate-400 text-sm mb-5">
+                        Username:
+                        <span class="text-white">
+                            {{ request.user.username }}
+                        </span>
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+
+                        <!-- Save Profile -->
+                        <button type="submit"
+                            class="px-7 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition">
+
+                            Save Changes
+
+                        </button>
+
+                        <!-- Change Password -->
+                        <a href="{% url 'tenant_change_password' %}"
+                           class="px-7 py-3 rounded-xl border border-slate-600 hover:border-cyan-400 hover:text-cyan-400 text-white font-bold text-center transition">
+
+                            🔐 Change Password
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-slate-500 text-xs mt-8">
+            RentFlow · Tenant Profile Management
+        </p>
+    </div>
+
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const progressBar = document.getElementById('profileProgressBar');
+
+        if (progressBar) {
+            let progress = parseInt(
+                progressBar.dataset.progress || '0',
+                10
+            );
+
+            progress = Math.max(0, Math.min(100, progress));
+
+            progressBar.style.width = progress + '%';
+        }
+    });
+</script>
+</html>

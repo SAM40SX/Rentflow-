@@ -1,0 +1,516 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentFlow | Admin Notifications</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #172033;
+        }
+
+        .container {
+            max-width: 1450px;
+            margin: auto;
+            padding: 35px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #78849a;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        .back {
+            background: #111827;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary {
+            background: white;
+            padding: 23px;
+            border-radius: 14px;
+            border: 1px solid #edf0f5;
+        }
+
+        .summary p {
+            color: #7b8799;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .summary h2 {
+            font-size: 27px;
+        }
+
+        .blue { color: #2563eb; }
+        .green { color: #16a36a; }
+        .amber { color: #d97706; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 390px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #edf0f5;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #8994a6;
+            margin-bottom: 23px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #0891b2;
+        }
+
+        textarea {
+            min-height: 125px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .send-btn {
+            width: 100%;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            background: #0891b2;
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background: #0e7490;
+        }
+
+        .history-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .history-heading span {
+            color: #8994a6;
+            font-size: 12px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 12px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        td {
+            color: #475569;
+        }
+
+        .tenant-name {
+            color: #172033;
+            font-weight: 700;
+        }
+
+        .type {
+            padding: 6px 9px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .read {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .unread {
+            color: #d97706;
+            font-weight: 700;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #94a3b8;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .message.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media(max-width: 1000px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Notifications Management</h1>
+            <p>Send announcements and manage tenant communications.</p>
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Django Messages -->
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message
+                {% if message.tags == 'error' %}error
+                {% elif message.tags == 'warning' %}warning
+                {% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Summary Cards -->
+
+    <div class="summary-grid">
+
+        <div class="summary">
+            <p>Total Notifications</p>
+            <h2 class="blue">
+                {{ total_notifications }}
+            </h2>
+        </div>
+
+        <div class="summary">
+            <p>Read Notifications</p>
+            <h2 class="green">
+                {{ read_notifications }}
+            </h2>
+        </div>
+
+        <div class="summary">
+            <p>Unread Notifications</p>
+            <h2 class="amber">
+                {{ unread_notifications }}
+            </h2>
+        </div>
+
+    </div>
+
+    <div class="content-grid">
+
+        <!-- Send Notification Form -->
+
+        <div class="card">
+
+            <h3>Send New Notification</h3>
+
+            <p class="subtitle">
+                Compose an announcement or message for your tenants.
+            </p>
+
+            <form method="POST" action="{% url 'send_notification' %}">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Notification Title</label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        placeholder="Enter notification title"
+                        maxlength="200"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Recipient</label>
+
+                    <select name="recipient" required>
+
+                        <option value="">
+                            Select recipient
+                        </option>
+
+                        <option value="all">
+                            All Tenants
+                        </option>
+
+                        {% for tenant in tenant_users %}
+                            <option value="{{ tenant.id }}">
+                                {{ tenant.get_full_name|default:tenant.username }}
+                                ({{ tenant.username }})
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Notification Type</label>
+
+                    <select name="notification_type" required>
+
+                        <option value="general">
+                            General Announcement
+                        </option>
+
+                        <option value="rent">
+                            Rent Reminder
+                        </option>
+
+                        <option value="payment">
+                            Payment Update
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Message</label>
+
+                    <textarea
+                        name="message"
+                        placeholder="Write your message here..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="send-btn">
+                    Send Notification
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Notification History -->
+
+        <div class="card">
+
+            <div class="history-heading">
+
+                <div>
+                    <h3>Notification History</h3>
+                    <p class="subtitle">
+                        Review messages sent to tenants.
+                    </p>
+                </div>
+
+                <span>
+                    {{ total_notifications }} records
+                </span>
+
+            </div>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Recipient</th>
+                            <th>Title</th>
+                            <th>Message</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Date Sent</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for notification in notifications %}
+
+                        <tr>
+
+                            <td class="tenant-name">
+                                {{ notification.user.username }}
+                            </td>
+
+                            <td>
+                                {{ notification.title }}
+                            </td>
+
+                            <td>
+                                {{ notification.message|truncatechars:55 }}
+                            </td>
+
+                            <td>
+                                <span class="type">
+                                    {{ notification.get_notification_type_display }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if notification.is_read %}
+                                    <span class="read">Read</span>
+                                {% else %}
+                                    <span class="unread">Unread</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ notification.created_at|date:"d M Y, H:i" }}
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="6" class="empty">
+                                No notifications have been sent yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

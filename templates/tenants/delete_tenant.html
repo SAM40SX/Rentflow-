@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Tenant | RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 18px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+        }
+
+        .icon {
+            width: 65px;
+            height: 65px;
+            background: #fee2e2;
+            color: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            border-radius: 50%;
+            font-size: 30px;
+        }
+
+        h1 {
+            font-size: 23px;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .tenant {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        button, .cancel {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button {
+            background: #dc2626;
+            color: white;
+        }
+
+        button:hover {
+            background: #b91c1c;
+        }
+
+        .cancel {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        @media(max-width: 400px) {
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="icon">!</div>
+
+    <h1>Deactivate Account?</h1>
+
+    <p>
+       <h2>Deactivate Tenant Account</h2>
+
+<p>
+    Are you sure you want to deactivate
+    <strong>{{ tenant.username }}</strong>?
+</p>
+
+<p>
+    The tenant will no longer be able to access their account,
+    but their rental and payment records will be preserved.
+</p>
+    </p>
+
+    <div class="tenant">
+        {{ tenant.username }}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="actions">
+            <a href="{% url 'tenant_list' %}" class="cancel">
+                Cancel
+            </a>
+
+            <button type="submit">
+                Deactivate Account
+            </button>
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

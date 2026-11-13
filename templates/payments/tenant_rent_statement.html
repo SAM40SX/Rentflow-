@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentFlow | Rent Statement</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f4f7fb;
+        }
+
+        .main-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-slate-800">
+
+    <nav class="bg-slate-950 text-white px-6 py-5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight">
+                    Rent<span class="text-cyan-400">Flow</span>
+                </h1>
+                <p class="text-xs text-slate-400">Tenant Rent Statement</p>
+            </div>
+
+            <a href="{% url 'tenant_dashboard' %}"
+               class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-sm font-bold">
+                Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-5 py-10">
+
+        <div class="mb-8">
+            <p class="text-sm text-slate-500 font-semibold">
+                Financial Overview
+            </p>
+
+            <h2 class="text-3xl font-extrabold mt-1">
+                My Rent Statement
+            </h2>
+            <div class="mt-5">
+    <a href="{% url 'download_rent_statement_pdf' %}"
+       class="inline-flex items-center gap-2 bg-slate-950 hover:bg-cyan-600 text-white px-6 py-3 rounded-xl font-bold text-sm transition shadow-lg">
+
+        <span>📥</span>
+        Download PDF Statement
+
+    </a>
+            </div>
+
+            <p class="text-slate-500 mt-2">
+                Welcome, {{ tenant_name }}. Review your monthly rent charges and successful payments.
+            </p>
+        </div>
+
+        {% if tenant %}
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+
+            <div class="main-card p-6">
+                <p class="text-sm text-slate-500 font-semibold">
+                    Total Rent Charged
+                </p>
+
+                <h3 class="text-2xl font-extrabold mt-3">
+                    KES {{ total_rent|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Total rent for the statement period
+                </p>
+            </div>
+
+            <div class="main-card p-6">
+                <p class="text-sm text-slate-500 font-semibold">
+                    Total Successfully Paid
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-emerald-600 mt-3">
+                    KES {{ total_paid|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Payments marked as paid
+                </p>
+            </div>
+
+            <div class="main-card p-6">
+                <p class="text-sm text-slate-500 font-semibold">
+                    Outstanding Balance
+                </p>
+
+                <h3 class="text-2xl font-extrabold text-rose-600 mt-3">
+                    KES {{ total_balance|floatformat:2 }}
+                </h3>
+
+                <p class="text-xs text-slate-400 mt-2">
+                    Balance based on this statement
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Statement Table -->
+        <div class="main-card overflow-hidden">
+
+            <div class="p-6 border-b border-slate-100">
+                <h3 class="font-extrabold text-lg">
+                    Monthly Rent Breakdown
+                </h3>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Monthly rent is due on the 10th.
+                </p>
+            </div>
+
+            {% if statement %}
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-sm text-left">
+
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-4">Month</th>
+                            <th class="px-6 py-4">Due Date</th>
+                            <th class="px-6 py-4">Rent</th>
+                            <th class="px-6 py-4">Paid</th>
+                            <th class="px-6 py-4">Balance</th>
+                            <th class="px-6 py-4">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-slate-100">
+
+                        {% for row in statement %}
+
+                        <tr class="hover:bg-slate-50">
+
+                            <td class="px-6 py-5 font-bold">
+                                {{ row.month }}
+                            </td>
+
+                            <td class="px-6 py-5 text-slate-500">
+                                {{ row.due_date|date:"d M Y" }}
+                            </td>
+
+                            <td class="px-6 py-5 font-semibold">
+                                KES {{ row.rent|floatformat:2 }}
+                            </td>
+
+                            <td class="px-6 py-5 text-emerald-600 font-semibold">
+                                KES {{ row.paid|floatformat:2 }}
+                            </td>
+
+                            <td class="px-6 py-5 font-bold text-rose-600">
+                                KES {{ row.balance|floatformat:2 }}
+                            </td>
+
+                            <td class="px-6 py-5">
+
+                                {% if row.status == 'Paid' %}
+                                    <span class="status bg-emerald-100 text-emerald-700">
+                                        Paid
+                                    </span>
+
+                                {% elif row.status == 'Partially Paid' %}
+                                    <span class="status bg-amber-100 text-amber-700">
+                                        Partially Paid
+                                    </span>
+
+                                {% elif row.status == 'Overdue' %}
+                                    <span class="status bg-rose-100 text-rose-700">
+                                        Overdue
+                                    </span>
+
+                                {% else %}
+                                    <span class="status bg-blue-100 text-blue-700">
+                                        Pending
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-16 px-6">
+                <div class="text-4xl mb-4">📄</div>
+
+                <h3 class="font-extrabold text-lg">
+                    No Rent Statement Yet
+                </h3>
+
+                <p class="text-slate-500 text-sm mt-2">
+                    Your first full rent charge will appear in the month after your move-in date.
+                </p>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        {% else %}
+
+        <div class="main-card text-center py-16 px-6">
+            <div class="text-4xl mb-4">🏠</div>
+
+            <h3 class="text-xl font-extrabold">
+                No Property Assigned
+            </h3>
+
+            <p class="text-slate-500 mt-2">
+                Your rent statement will appear after an administrator assigns a property to your account.
+            </p>
+        </div>
+
+        {% endif %}
+
+        <p class="text-center text-xs text-slate-400 mt-8">
+            RentFlow &copy; {% now "Y" %} — Tenant Financial Statement
+        </p>
+
+    </main>
+
+</body>
+</html>

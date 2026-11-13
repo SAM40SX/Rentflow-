@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RentFlow | Payment Management</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #172033;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 35px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+        }
+
+        .header p {
+            color: #78849a;
+            margin-top: 7px;
+            font-size: 13px;
+        }
+
+        .back, .record-btn {
+            background: #111827;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .record-btn {
+            background: #0891b2;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary {
+            background: white;
+            padding: 23px;
+            border-radius: 14px;
+            border: 1px solid #edf0f5;
+        }
+
+        .summary p {
+            color: #7b8799;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .summary h2 {
+            font-size: 25px;
+        }
+
+        .green { color: #16a36a; }
+        .amber { color: #d97706; }
+        .blue { color: #2563eb; }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .filters input {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-btn {
+            border: none;
+            background: #111827;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            color: #64748b;
+            padding: 12px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .table-box {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            border: 1px solid #edf0f5;
+            overflow-x: auto;
+        }
+
+        .table-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 12px;
+        }
+
+        th {
+            color: #64748b;
+            background: #f8fafc;
+            white-space: nowrap;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .failed {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .action-btn {
+            padding: 8px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .approve {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .reject {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #94a3b8;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        @media(max-width: 850px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Payment Management</h1>
+            <p>Monitor, review and manage tenant rent payments.</p>
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {% if message.tags == 'warning' %}warning{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Summary Cards -->
+
+    <div class="summary-grid">
+
+        <div class="summary">
+            <p>Total Payments Collected</p>
+            <h2 class="green">
+                KES {{ total_collected|floatformat:2 }}
+            </h2>
+            <p>{{ paid_count }} successful payments</p>
+        </div>
+
+        <div class="summary">
+            <p>Pending Payments</p>
+            <h2 class="amber">
+                KES {{ total_pending|floatformat:2 }}
+            </h2>
+            <p>{{ pending_count }} awaiting review</p>
+        </div>
+
+        <div class="summary">
+            <p>Failed Payments</p>
+            <h2 class="blue">
+                {{ failed_count }}
+            </h2>
+            <p>Unsuccessful or rejected payments</p>
+        </div>
+
+    </div>
+
+    <!-- Payment Table -->
+
+    <div class="table-box">
+
+        <div class="table-heading">
+
+            <h3>All Tenant Payments</h3>
+
+            <a href="{% url 'add_payment' %}" class="record-btn">
+                + Record Payment
+            </a>
+
+        </div>
+
+        <!-- Search and Filters -->
+
+        <form method="GET" class="filters">
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search tenant name or username..."
+                value="{{ search_query }}"
+            >
+
+            <select name="status">
+
+                <option value="">All Payment Statuses</option>
+
+                <option value="paid"
+                    {% if status_filter == 'paid' %}selected{% endif %}>
+                    Paid
+                </option>
+
+                <option value="pending"
+                    {% if status_filter == 'pending' %}selected{% endif %}>
+                    Pending
+                </option>
+
+                <option value="failed"
+                    {% if status_filter == 'failed' %}selected{% endif %}>
+                    Failed
+                </option>
+
+            </select>
+
+            <button type="submit" class="filter-btn">
+                Apply Filters
+            </button>
+
+            <a href="{% url 'payment_list' %}" class="reset-btn">
+                Reset
+            </a>
+
+        </form>
+
+        <div style="overflow-x:auto;">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Tenant</th>
+                        <th>Property</th>
+                        <th>Amount</th>
+                        <th>Payment Date</th>
+                        <th>Method</th>
+                        <th>Transaction Code</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for payment in payments %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ payment.tenant.tenant_user.username }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ payment.tenant.property.name|default:"—" }}
+                        </td>
+
+                        <td>
+                            <strong>
+                                KES {{ payment.amount|floatformat:2 }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ payment.payment_date|date:"d M Y" }}
+                        </td>
+
+                        <td>
+                            {{ payment.get_payment_method_display }}
+                        </td>
+
+                        <td>
+                            {{ payment.transaction_code|default:"—" }}
+                        </td>
+
+                        <td>
+                            <span class="status {{ payment.status }}">
+                                {{ payment.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            {% if payment.status == 'pending' %}
+
+                            <div class="actions">
+
+                                <form method="POST"
+                                      action="{% url 'approve_payment' payment.id %}"
+                                      onsubmit="return confirm('Approve this payment?');">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="action-btn approve">
+                                        Approve
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{% url 'reject_payment' payment.id %}"
+                                      onsubmit="return confirm('Reject this payment?');">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="action-btn reject">
+                                        Reject
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                            {% else %}
+
+                                <span style="color:#94a3b8;font-size:11px;">
+                                    No actions
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="8" class="empty">
+                            No payment records found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

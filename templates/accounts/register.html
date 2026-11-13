@@ -1,0 +1,293 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account – RentFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#0B1220',
+                        'midnight-card': '#111827',
+                        royal: '#4169E1',
+                        cyanAccent: '#22D3EE',
+                        softWhite: '#F8FAFC',
+                        slateGray: '#94A3B8',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-card {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glow-orb-1 {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(65,105,225,0.3), transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        .glow-orb-2 {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(34,211,238,0.2), transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 15px;
+            border-radius: 12px;
+            background: #111827;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #22D3EE;
+            box-shadow: 0 0 0 1px #22D3EE;
+        }
+
+        .form-input::placeholder {
+            color: #94A3B8;
+        }
+    </style>
+</head>
+
+<body class="bg-midnight text-softWhite font-sans antialiased min-h-screen flex items-center justify-center p-5">
+
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+
+    <div class="relative z-10 w-full max-w-2xl">
+
+        <!-- Brand -->
+        <div class="text-center mb-8">
+
+            <div class="inline-flex items-center gap-3 mb-4">
+
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-royal to-cyanAccent flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    R
+                </div>
+
+                <span class="text-2xl font-extrabold text-white">
+                    RentFlow<span class="text-cyanAccent">.</span>
+                </span>
+
+            </div>
+
+            <h1 class="text-3xl font-extrabold text-white">
+                Create Your Account
+            </h1>
+
+            <p class="text-slateGray text-sm mt-2">
+                Register to access your tenant portal.
+            </p>
+
+        </div>
+
+        <!-- Registration Card -->
+        <div class="glass-card rounded-2xl p-6 sm:p-9 shadow-2xl">
+
+            <div class="mb-7">
+
+                <h2 class="text-xl font-bold text-white">
+                    Tenant Registration
+                </h2>
+
+                <p class="text-xs text-slateGray mt-1">
+                    Enter your details to submit your registration.
+                </p>
+
+            </div>
+
+            <!-- General Form Errors -->
+            {% if form.non_field_errors %}
+                <div class="mb-5 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-5">
+
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+                    <!-- Username -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Username
+                        </label>
+
+                        {{ form.username }}
+
+                        {% for error in form.username.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Email Address
+                        </label>
+
+                        {{ form.email }}
+
+                        {% for error in form.email.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- First Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            First Name
+                        </label>
+
+                        {{ form.first_name }}
+
+                        {% for error in form.first_name.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Last Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Last Name
+                        </label>
+
+                        {{ form.last_name }}
+
+                        {% for error in form.last_name.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Phone Number
+                        </label>
+
+                        {{ form.phone_number }}
+
+                        {% for error in form.phone_number.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Password
+                        </label>
+
+                        {{ form.password1 }}
+
+                        {% for error in form.password1.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slateGray uppercase tracking-wider mb-2">
+                            Confirm Password
+                        </label>
+
+                        {{ form.password2 }}
+
+                        {% for error in form.password2.errors %}
+                            <p class="text-red-400 text-xs mt-2">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <!-- Approval Notice -->
+                <div class="p-4 rounded-xl bg-blue-500/10 border border-blue-400/20">
+
+                    <div class="flex gap-3">
+
+                        <span class="text-cyanAccent text-lg">ℹ</span>
+
+                        <div>
+                            <p class="text-sm font-semibold text-cyanAccent">
+                                Administrator Approval Required
+                            </p>
+
+                            <p class="text-xs text-slateGray leading-relaxed mt-1">
+                                After registration, your account will be reviewed by the administrator. Your property and rent details must be assigned before you can log in.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Submit -->
+                <button
+                    type="submit"
+                    class="w-full py-4 rounded-xl bg-gradient-to-r from-royal to-cyanAccent text-white font-bold text-sm shadow-xl shadow-royal/30 hover:shadow-cyanAccent/40 transition-all transform hover:-translate-y-0.5"
+                >
+                    Create Tenant Account
+                </button>
+
+            </form>
+
+            <!-- Login Link -->
+            <div class="text-center mt-7 pt-6 border-t border-white/10">
+
+                <p class="text-sm text-slateGray">
+                    Already have an account?
+
+                    <a href="{% url 'login' %}" class="text-cyanAccent font-bold hover:underline">
+                        Sign In
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-xs text-slateGray mt-7">
+            © 2026 RentFlow. All rights reserved.
+        </p>
+
+    </div>
+
+</body>
+</html>

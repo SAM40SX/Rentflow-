@@ -1,0 +1,316 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentFlow | System Settings</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f4f7fb; }
+        .sidebar { background: #101c35; }
+        .active-link { background: #19365a; color: #38bdf8; }
+        .form-input {
+            width: 100%;
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            padding: 12px 14px;
+            outline: none;
+            background: white;
+        }
+        .form-input:focus {
+            border-color: #0891b2;
+            box-shadow: 0 0 0 3px rgba(8,145,178,.1);
+        }
+        .save-btn {
+            background: #0891b2;
+            transition: .2s;
+        }
+        .save-btn:hover { background: #0e7490; }
+    </style>
+</head>
+
+<body>
+
+<div class="flex min-h-screen">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar w-64 text-white hidden lg:flex flex-col">
+
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-2xl font-extrabold">
+                <i class="fa-solid fa-house text-cyan-400"></i>
+                Rent<span class="text-cyan-400">Flow</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-2">Property Management System</p>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-2">
+
+            <a href="{% url 'admin_dashboard' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-chart-line w-6"></i> Dashboard
+            </a>
+
+            <a href="{% url 'property_list' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-building w-6"></i> Properties
+            </a>
+
+            <a href="{% url 'tenant_list' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-users w-6"></i> Tenants
+            </a>
+
+            <a href="{% url 'payment_list' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-money-bill-wave w-6"></i> Payments
+            </a>
+
+            <a href="{% url 'reports_dashboard' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-chart-pie w-6"></i> Reports
+            </a>
+
+            <a href="{% url 'manage_users' %}" class="block p-3 rounded-lg hover:bg-slate-700">
+                <i class="fa-solid fa-user-shield w-6"></i> User Management
+            </a>
+
+            <a href="{% url 'system_settings' %}" class="active-link block p-3 rounded-lg">
+                <i class="fa-solid fa-gear w-6"></i> System Settings
+            </a>
+
+        </nav>
+
+        <div class="p-4 border-t border-slate-700">
+            <a href="{% url 'logout' %}" class="block p-3 rounded-lg text-red-300 hover:bg-slate-700">
+                <i class="fa-solid fa-right-from-bracket w-6"></i> Logout
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-5 md:p-8">
+
+        <div class="max-w-6xl mx-auto">
+
+            <!-- HEADER -->
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-8">
+
+                <div>
+                    <p class="text-sm text-slate-500 mb-1">Administration / Settings</p>
+                    <h2 class="text-3xl font-extrabold text-slate-800">
+                        System Settings
+                    </h2>
+                    <p class="text-slate-500 mt-2">
+                        Manage your RentFlow system configuration.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-xl px-4 py-3 shadow-sm">
+                    <p class="text-xs text-slate-400">Logged in as</p>
+                    <p class="font-bold text-slate-700">
+                        <i class="fa-solid fa-user-shield text-cyan-600 mr-2"></i>
+                        {{ request.user.username }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGES -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mb-4 p-4 rounded-xl bg-green-50 text-green-700 border border-green-200">
+                        <i class="fa-solid fa-circle-check mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                    <!-- GENERAL SETTINGS -->
+                    <section class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-11 h-11 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+                                <i class="fa-solid fa-sliders text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">General Information</h3>
+                                <p class="text-sm text-slate-400">Basic system and company details</p>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-5">
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">System Name</label>
+                                <input type="text" name="system_name" class="form-input"
+                                       value="{{ settings.system_name }}" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Company Name</label>
+                                <input type="text" name="company_name" class="form-input"
+                                       value="{{ settings.company_name }}">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Contact Email</label>
+                                <input type="email" name="contact_email" class="form-input"
+                                       value="{{ settings.contact_email }}">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Contact Phone</label>
+                                <input type="text" name="contact_phone" class="form-input"
+                                       value="{{ settings.contact_phone }}">
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-600 mb-2">Company Address</label>
+                                <textarea name="address" rows="3" class="form-input">{{ settings.address }}</textarea>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- RENT SETTINGS -->
+                    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-check text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">Rent Configuration</h3>
+                                <p class="text-sm text-slate-400">Payment defaults</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Currency</label>
+                            <select name="currency" class="form-input">
+                                <option value="KES" {% if settings.currency == 'KES' %}selected{% endif %}>KES - Kenyan Shilling</option>
+                                <option value="USD" {% if settings.currency == 'USD' %}selected{% endif %}>USD - US Dollar</option>
+                                <option value="EUR" {% if settings.currency == 'EUR' %}selected{% endif %}>EUR - Euro</option>
+                                <option value="GBP" {% if settings.currency == 'GBP' %}selected{% endif %}>GBP - British Pound</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2">Monthly Rent Due Day</label>
+                            <input type="number" name="rent_due_day" min="1" max="28"
+                                   class="form-input"
+                                   value="{{ settings.rent_due_day }}" required>
+                            <p class="text-xs text-slate-400 mt-2">
+                                The day of each month when rent becomes due.
+                            </p>
+                        </div>
+
+                        <div class="bg-blue-50 rounded-xl p-4">
+                            <p class="text-sm text-blue-800 font-semibold">
+                                <i class="fa-solid fa-circle-info mr-2"></i>
+                                Default due date
+                            </p>
+                            <p class="text-sm text-blue-600 mt-1">
+                                Rent is currently configured to be due on the 10th of every month.
+                            </p>
+                        </div>
+
+                    </section>
+
+
+                    <!-- NOTIFICATION SETTINGS -->
+                    <section class="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                                <i class="fa-solid fa-bell text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-slate-800">Notification Preferences</h3>
+                                <p class="text-sm text-slate-400">Choose notification options</p>
+                            </div>
+                        </div>
+
+                        <label class="flex items-center justify-between py-4 border-b border-slate-100 cursor-pointer">
+                            <div>
+                                <p class="font-semibold text-slate-700">Email Notifications</p>
+                                <p class="text-sm text-slate-400">Enable email notification preferences.</p>
+                            </div>
+                            <input type="checkbox" name="email_notifications"
+                                   class="w-5 h-5 accent-cyan-600"
+                                   {% if settings.email_notifications %}checked{% endif %}>
+                        </label>
+
+                        <label class="flex items-center justify-between py-4 cursor-pointer">
+                            <div>
+                                <p class="font-semibold text-slate-700">SMS Notifications</p>
+                                <p class="text-sm text-slate-400">Enable SMS notification preferences.</p>
+                            </div>
+                            <input type="checkbox" name="sms_notifications"
+                                   class="w-5 h-5 accent-cyan-600"
+                                   {% if settings.sms_notifications %}checked{% endif %}>
+                        </label>
+
+                        <p class="text-xs text-slate-400 mt-3">
+                            These settings store your preferences. Actual email and SMS delivery requires notification service integration.
+                        </p>
+
+                    </section>
+
+
+                    <!-- SUMMARY CARD -->
+                    <section class="bg-slate-900 text-white rounded-2xl p-6 shadow-sm">
+
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-shield-halved text-xl"></i>
+                        </div>
+
+                        <h3 class="text-lg font-bold">System Configuration</h3>
+
+                        <p class="text-sm text-slate-400 mt-2 leading-6">
+                            Keep your system information accurate and your configuration up to date.
+                        </p>
+
+                        <div class="mt-6 pt-5 border-t border-slate-700">
+                            <p class="text-xs text-slate-400">Last updated</p>
+                            <p class="font-semibold mt-1">
+                                {{ settings.updated_at|date:"d M Y, H:i" }}
+                            </p>
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- SAVE BUTTON -->
+                <div class="flex justify-end mt-7">
+                    <button type="submit" class="save-btn text-white font-bold px-8 py-3 rounded-xl shadow-lg">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i>
+                        Save Settings
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

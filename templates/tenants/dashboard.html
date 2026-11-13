@@ -1,0 +1,423 @@
+
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Portal – RentFlow Reminder</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#0B1220',
+                        'midnight-card': '#111827',
+                        royal: '#4169E1',
+                        cyanAccent: '#22D3EE',
+                        softWhite: '#F8FAFC',
+                        slateGray: '#94A3B8',
+                        emeraldSuccess: '#10B981',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glow-orb-1 {
+            position: absolute;
+            top: -5%;
+            left: 10%;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(65, 105, 225, 0.2) 0%, rgba(11, 18, 32, 0) 70%);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(60px);
+        }
+
+        .grid-pattern {
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+
+<body class="bg-midnight text-softWhite font-sans antialiased min-h-screen selection:bg-cyanAccent selection:text-midnight">
+
+    <div class="glow-orb-1"></div>
+
+    <div class="min-h-screen flex flex-col md:flex-row relative z-10 grid-pattern">
+
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-72 bg-midnight-card/90 border-r border-white/5 p-6 flex flex-col justify-between shrink-0">
+
+            <div>
+
+                <!-- Logo -->
+                <div class="flex items-center gap-2 mb-10">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-royal to-cyanAccent flex items-center justify-center font-bold text-white text-sm shadow-lg shadow-royal/30">
+                        R
+                    </div>
+
+                    <span class="text-xl font-extrabold tracking-tight text-white">
+                        RentFlow<span class="text-cyanAccent">.</span>
+                    </span>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="space-y-1.5">
+
+                    <p class="text-[11px] font-bold text-slateGray uppercase tracking-wider mb-3 px-3">
+                        Tenant Portal
+                    </p>
+
+                    <!-- Dashboard -->
+                    <a href="{% url 'tenant_dashboard' %}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-royal/20 to-cyanAccent/10 text-cyanAccent border border-cyanAccent/20">
+                        <span>🏠</span> Dashboard
+                    </a>
+
+                    <!-- My Property -->
+                    <a href="{% url 'tenant_my_property' %}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slateGray hover:text-white hover:bg-white/5 transition-all">
+                        <span>🏢</span> My Property
+                    </a>
+
+                    <!-- Rent Payments -->
+                    <a href="{% url 'tenant_payment_history' %}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slateGray hover:text-white hover:bg-white/5 transition-all">
+                        <span>💳</span> Rent Payments
+                    </a>
+
+                    <!-- Notifications -->
+                    <a href="{% url 'notification_list' %}" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-slateGray hover:text-white hover:bg-white/5 transition-all">
+
+                        <span class="flex items-center gap-3">
+                            <span>🔔</span> Notifications
+                        </span>
+
+                        {% if unread_notifications > 0 %}
+                            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                                {{ unread_notifications }}
+                            </span>
+                        {% endif %}
+
+                    </a>
+
+                    <!-- Rent Statement -->
+                    <a href="{% url 'tenant_rent_statement' %}"
+                       class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-cyan-400 transition">
+                        <span>📄</span>
+                        <span class="font-semibold">Rent Statement</span>
+                    </a>
+
+                    <!-- My Profile -->
+                    <a href="{% url 'tenant_profile' %}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium text-slateGray hover:text-white hover:bg-white/5 transition-all">
+                        <span>👤</span> My Profile
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- Logout Link -->
+            <div class="pt-6 border-t border-white/5">
+
+                <a href="{% url 'logout' %}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-500/10 transition-all">
+                    <span>↪</span> Logout
+                </a>
+
+            </div>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 md:p-10 min-w-0 flex flex-col justify-between">
+
+            <div class="space-y-8">
+
+                <!-- Topbar -->
+                <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/5">
+
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-white tracking-tight">
+                            Tenant Dashboard
+                        </h1>
+
+                        <p class="text-xs text-slateGray mt-1">
+                            Manage your rental information, lease, and payment history.
+                        </p>
+                    </div>
+
+                    <div class="glass-card px-4 py-2.5 rounded-xl flex items-center gap-3 self-start sm:self-auto border border-white/10">
+
+                        <div class="w-8 h-8 rounded-lg bg-royal/20 text-cyanAccent flex items-center justify-center font-bold text-xs">
+                            👤
+                        </div>
+
+                        <div>
+                            <p class="text-[10px] text-slateGray uppercase tracking-wider font-semibold">
+                                Signed in as
+                            </p>
+
+                            <p class="text-xs font-bold text-white">
+                                {{ tenant_name }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                </header>
+
+                <!-- Welcome Banner -->
+                <section class="relative overflow-hidden rounded-2xl p-8 bg-gradient-to-r from-royal/20 via-cyanAccent/10 to-midnight-card border border-white/10 shadow-xl">
+
+                    <div class="relative z-10 max-w-2xl space-y-3">
+
+                        <span class="px-3 py-1 rounded-full bg-cyanAccent/10 text-cyanAccent text-xs font-semibold">
+                            Verified Resident
+                        </span>
+
+                        <h2 class="text-2xl font-extrabold text-white tracking-tight">
+                            Welcome back, {{ tenant_name }}! 👋
+                        </h2>
+
+                        <p class="text-sm text-slateGray leading-relaxed">
+                            Welcome to your RentFlow portal. Keep track of your monthly rent commitments, payment reminders, and lease status effortlessly.
+                        </p>
+
+                    </div>
+
+                </section>
+
+                <!-- Quick Stats Grid -->
+                <section class="grid sm:grid-cols-3 gap-5">
+
+                    <!-- Monthly Rent -->
+                    <div class="glass-card p-6 rounded-2xl border border-white/5 space-y-2">
+
+                        <p class="text-xs font-semibold text-slateGray uppercase tracking-wider">
+                            Monthly Rent
+                        </p>
+
+                        <h3 class="text-2xl font-extrabold text-white">
+                            KES {{ monthly_rent|default:"0" }}
+                        </h3>
+
+                        <p class="text-[11px] text-slateGray">
+                            Your monthly lease commitment
+                        </p>
+
+                    </div>
+
+                    <!-- Next Payment Deadline -->
+                    <div class="glass-card p-6 rounded-2xl border border-white/5 space-y-2">
+
+                        <p class="text-xs font-semibold text-slateGray uppercase tracking-wider">
+                            Next Payment Deadline
+                        </p>
+
+                        <h3 class="text-xl font-extrabold text-cyanAccent">
+
+                            {% if next_payment %}
+                                {{ next_payment|date:"d F Y" }}
+                            {% else %}
+                                Not set
+                            {% endif %}
+
+                        </h3>
+
+                        <p class="text-[11px] text-slateGray">
+                            Upcoming rent due date
+                        </p>
+
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="glass-card p-6 rounded-2xl border border-white/5 space-y-2">
+
+                        <p class="text-xs font-semibold text-slateGray uppercase tracking-wider">
+                            Payment Status
+                        </p>
+
+                        <h3 class="text-xl font-extrabold text-emeraldSuccess">
+                            {{ payment_status }}
+                        </h3>
+
+                        <p class="text-[11px] text-slateGray">
+                            Current payment status
+                        </p>
+
+                    </div>
+
+                </section>
+
+                <!-- Detailed Information Cards -->
+                <div class="grid md:grid-cols-2 gap-6">
+
+                    <!-- Rental Information Card -->
+                    <div class="glass-card p-6 rounded-2xl border border-white/5 space-y-5">
+
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🏠</span> Rental Information
+                        </h3>
+
+                        <div class="space-y-4 text-sm">
+
+                            <div class="flex justify-between items-center py-2.5 border-b border-white/5">
+                                <span class="text-slateGray text-xs">
+                                    Tenant Username
+                                </span>
+
+                                <strong class="text-white text-xs font-mono">
+                                    {{ tenant_name }}
+                                </strong>
+                            </div>
+
+                            <div class="flex justify-between items-center py-2.5 border-b border-white/5">
+                                <span class="text-slateGray text-xs">
+                                    Monthly Rent
+                                </span>
+
+                                <strong class="text-white text-xs">
+                                    KES {{ monthly_rent|default:"0" }}
+                                </strong>
+                            </div>
+
+                            <div class="flex justify-between items-center py-2.5">
+                                <span class="text-slateGray text-xs">
+                                    Next Payment Date
+                                </span>
+
+                                <strong class="text-cyanAccent text-xs">
+
+                                    {% if next_payment %}
+                                        {{ next_payment|date:"d F Y" }}
+                                    {% else %}
+                                        Not assigned
+                                    {% endif %}
+
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Recent Payment Activity Card -->
+                    <div class="glass-card p-6 rounded-2xl border border-white/5 space-y-5">
+
+                        <div class="flex justify-between items-center">
+
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <span>💳</span> Recent Payment Activity
+                            </h3>
+
+                            <a href="{% url 'tenant_payment_history' %}"
+                               class="text-xs text-cyanAccent hover:text-white transition-all">
+                                View All →
+                            </a>
+
+                        </div>
+
+                        <div class="space-y-4">
+
+                            {% if recent_payments %}
+
+                                {% for payment in recent_payments %}
+
+                                    <div class="flex justify-between items-center gap-3 p-4 rounded-xl bg-midnight/40 border border-white/5">
+
+                                        <div class="space-y-1">
+
+                                            <p class="text-sm font-semibold text-white">
+                                                KES {{ payment.amount|floatformat:2 }}
+                                            </p>
+
+                                            <p class="text-[11px] text-slateGray">
+                                                {{ payment.payment_date|date:"d M Y" }}
+                                            </p>
+
+                                            <p class="text-[11px] text-slateGray">
+                                                {{ payment.get_payment_method_display }}
+                                            </p>
+
+                                        </div>
+
+                                        <div>
+
+                                            {% if payment.status == 'paid' %}
+
+                                                <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold">
+                                                    Paid
+                                                </span>
+
+                                            {% elif payment.status == 'pending' %}
+
+                                                <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-[11px] font-semibold">
+                                                    Pending
+                                                </span>
+
+                                            {% elif payment.status == 'failed' %}
+
+                                                <span class="px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-[11px] font-semibold">
+                                                    Failed
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <div class="p-5 rounded-xl bg-midnight/40 border border-white/5 text-center">
+
+                                    <p class="text-sm font-semibold text-white">
+                                        No payment records available yet.
+                                    </p>
+
+                                    <p class="text-[11px] text-slateGray mt-2">
+                                        Your transactions will appear here once recorded.
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="pt-12 pb-4 text-center text-xs text-slateGray border-t border-white/5 mt-12">
+                © 2026 RentFlow. All rights reserved.
+            </footer>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
